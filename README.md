@@ -22,5 +22,5 @@
 
 ### Installation guide
 
-> - __Install python 3 and pip
-> - __To install all the requirements:__ pip install -r "Requirements.txt"
+> - _Install python 3 and pip
+> - __To install all the requirements:__ pip install -r "requirements.txt"
