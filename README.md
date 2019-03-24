@@ -17,4 +17,9 @@
 > - __Total number of reviews:__ The total number of reviews that the user has published
 > - __Rating variance:__ The variance of the ratings assigned by the user
 > - __Activity time of the user:__ The difference of timestamps of the last and first reviews of a reviewer
-> - __Maximum rating per day:__ The maximum rating provided by a user in the considered day
+> - __Maximum rating per day:__ The maximum rating provided by a user in the considered dayrere
+
+
+###Installation guide
+> - __Install python 3 and pip
+> - __To install all the requirements:__ pip install -r "Requirements.txt"
