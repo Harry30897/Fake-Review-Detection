@@ -14,7 +14,7 @@
 > - __Word number average:__ The average number of words that the user utilizes in his/her reviews
 > - __Total number of reviews:__ The total number of reviews that the user has published
 > - __Rating variance:__ The variance of the ratings assigned by the user
-> - __Maximum rating per day:__ The maximum rating provided by a user in the considered dayrere
+> - __Maximum rating per day:__ The maximum rating provided by a user in the considered day
 
 
 ### Installation guide
