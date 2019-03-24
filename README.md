@@ -5,7 +5,7 @@
 > - __Number of Words:__ The length of review in terms of words
 > - __Average of Word Length:__ The average length of words in a review
 > - __Ratio of capital letters:__ The number of words containing capital letters with respect to the total number of words in the review
-> - __Ration of capital words:__ The number of words where all the letters are in uppercase with respect to the total number of words
+> - __Ratio of capital words:__ The number of words where all the letters are in uppercase with respect to the total number of words
 > - __Ratio of first person pronouns:__ The number of words such as 'I', 'mine', 'my' with respect to the total number of words in the review
 > - __Rating:__ The rating attributed in the review to the entity
 
