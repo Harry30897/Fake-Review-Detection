@@ -46,17 +46,22 @@ def count_first_pronouns(review):
 def main():
     file_name = sys.argv[1]
     df = pd.DataFrame(
-        columns=['Content', 'Length', 'C_Letters', 'C_Words', 'F_Pronouns']
+        columns=['Length', 'C_Letters', 'C_Words', 'F_Pronouns']
     )
+    count = 0
     with open(file_name, 'r') as file:
-        for line in csv.reader(file, dialect='excel-tab'):
+        rows = []
+        # for line in csv.reader(file, dialect='excel-tab'):
+        for line in file:
             new_row = {}
-            new_row['Content'] = line[3]
-            new_row['Length'] = total_length(line[3])
-            new_row['C_Letters'] = capital_letters(line[3])
-            new_row['C_Words'] = capital_words(line[3])
-            new_row['F_Pronouns'] = count_first_pronouns([line[3]])
-            df.append(new_row, ignore_index=True)
+            new_row['Length'] = total_length(line)
+            new_row['C_Letters'] = capital_letters(line)
+            new_row['C_Words'] = capital_words(line)
+            new_row['F_Pronouns'] = count_first_pronouns(line)
+            rows.append(new_row)
+            count += 1
+            print('Extracted: {}'.format(count), end='\r')
+    df = df.append(rows, ignore_index=True)
     df.to_csv('features.csv')
 
 
