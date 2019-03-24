@@ -20,6 +20,7 @@
 > - __Maximum rating per day:__ The maximum rating provided by a user in the considered dayrere
 
 
-###Installation guide
+### Installation guide
+
 > - __Install python 3 and pip
 > - __To install all the requirements:__ pip install -r "Requirements.txt"
