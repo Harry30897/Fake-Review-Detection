@@ -12,12 +12,12 @@ genuine = features[features['label'] == 'N']
 fake = features[features['label'] == 'Y']
 genuine = train_test_split(genuine, train_size=0.2, test_size=0.0)[0]
 sample = genuine.append(fake)
-data = sample.loc[:, 'length':'max_rating']
+data = sample.loc[:, ['c_letters', 'total_reviews']]
 labels = sample['label']
 x_train, x_test, y_train, y_test = train_test_split(data,
                                                     labels,
                                                     test_size=0.1)
-logisticRegr = LogisticRegression()
+logisticRegr = LogisticRegression(max_iter=1000)
 logisticRegr.fit(x_train, y_train)
 score = logisticRegr.score(x_test, y_test)
 print('Logistic Score: ', score)
