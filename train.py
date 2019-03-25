@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import SGDClassifier
 from sklearn import svm
+from sklearn import tree
 from sklearn import metrics
 
 
@@ -28,7 +29,13 @@ score = sgd.score(x_test, y_test)
 print('SGD Score: ', score)
 
 
-clf = svm.SVC()
-clf.fit(x_train, y_train)
-y_pred = clf.predict(x_test)
+svc = svm.SVC()
+svc.fit(x_train, y_train)
+y_pred = svc.predict(x_test)
 print('SVM Score: ', metrics.accuracy_score(y_test, y_pred))
+
+
+decision_tree = tree.DecisionTreeClassifier()
+decision_tree.fit(x_train, y_train)
+score = decision_tree.score(x_test, y_test)
+print('Tree Score: ', score)
