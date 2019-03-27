@@ -3,7 +3,9 @@ import csv
 import re
 from math import ceil
 import pandas as pd
+import logging
 
+logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 
 first_pronouns = [
     'i', 'me', 'we', 'us',
@@ -73,9 +75,9 @@ def main():
         'c_words',
         'f_pronouns',
         'rating',
-        # 'word_num_avg',
+        'word_num_avg',
         'total_reviews',
-        # 'rating_var',
+        'rating_var',
         'max_rating',
         'label'
     ]
@@ -86,6 +88,7 @@ def main():
     reviewer_dict = create_reviewer_dict(meta_file)
     with open(content_file, 'r') as reviews, open(meta_file, 'r') as meta_data:
         rows = []
+        logging.info('processing reviews now')
         for review, meta in zip(reviews, meta_data):
             new_row = {}
             meta = meta.split(' ')
@@ -99,16 +102,34 @@ def main():
             new_row['c_words'] = capital_words(review)
             new_row['f_pronouns'] = count_first_pronouns(review)
             new_row['rating'] = meta[8]
-            # new_row['word_num_avg'] = reviewer_dict[meta[2]][0]
+            new_row['word_num_avg'] = None  # reviewer_dict[meta[2]][0]
             new_row['total_reviews'] = reviewer_dict[meta[2]]['count']
-            # new_row['rating_var'] = reviewer_dict[meta[2]][0]
+            new_row['rating_var'] = None  # reviewer_dict[meta[2]][0]
             new_row['max_rating'] = reviewer_dict[meta[2]][meta[0]]
             new_row['label'] = meta[4]
             rows.append(new_row)
             count += 1
-            print('Extracted: {}'.format(count), end='\r')
+            if count % 10000 == 0:
+                logging.info('processed review # {}'.format(count))
     features = features.append(rows, ignore_index=True)
     features = features.set_index('reviewID')
+
+    logging.info('processing reviewers now')
+    c = 0
+    for idx in features.reviewerID:
+        if 'avg' not in reviewer_dict[idx].keys():
+            t = features[features['reviewerID'] == idx].length
+            reviewer_dict[idx]['avg'] = sum(t) / len(t)
+            c += 1
+        if c % 1000 == 0:
+            logging.info('processed reviewer # {}'.format(c))
+
+    logging.info('processing complete')
+    for index, row in features.iterrows():
+        v = reviewer_dict[row['reviewerID']]['avg']
+        features.at[index, 'word_num_avg'] = v
+
+    logging.info('saving features to disk')
     features.to_csv('features.csv')
 
 
