@@ -61,12 +61,18 @@ def create_reviewer_dict(filename):
                 else:
                     reviewers[line[2]]['positive'] = 0
                     reviewers[line[2]]['negative'] = 1
+                if line[4] == 'N':
+                    reviewers[line[2]]['genuine'] = 1
+                else:
+                    reviewers[line[2]]['genuine'] = 0
             else:
                 reviewers[line[2]]['count'] += 1
                 if rating > 3:
                     reviewers[line[2]]['positive'] += 1
                 else:
                     reviewers[line[2]]['negative'] += 1
+                if line[4] == 'N':
+                    reviewers[line[2]]['genuine'] += 1
                 if line[0] not in reviewers[line[2]].keys():
                     reviewers[line[2]][line[0]] = int(line[8])
                 else:
@@ -80,6 +86,7 @@ def main():
     columns = [
         'reviewID',
         'reviewerID',
+        'productID',
         'length',
         'avg_w_len',
         'c_letters',
@@ -92,6 +99,8 @@ def main():
         'max_rating',
         'positive_ratio',
         'negative_ratio',
+        'reviewer_rating',
+        'review_prod_rating',
         'label'
     ]
     features = pd.DataFrame(
@@ -109,18 +118,21 @@ def main():
             review = review.split(' ')
             new_row['reviewID'] = meta[1]
             new_row['reviewerID'] = meta[2]
+            new_row['productID'] = meta[3]
             new_row['length'] = total_length(review)
             new_row['avg_w_len'] = avg_word_length(review)
             new_row['c_letters'] = capital_letters(review)
             new_row['c_words'] = capital_words(review)
             new_row['f_pronouns'] = count_first_pronouns(review)
-            new_row['rating'] = meta[8]
+            new_row['rating'] = int(meta[8])
             new_row['word_num_avg'] = None  # reviewer_dict[meta[2]][0]
             new_row['total_reviews'] = reviewer_dict[meta[2]]['count']
             new_row['rating_var'] = None  # reviewer_dict[meta[2]][0]
             new_row['max_rating'] = reviewer_dict[meta[2]][meta[0]]
             new_row['positive_ratio'] = 0.0
             new_row['negative_ratio'] = 0.0
+            new_row['reviewer_rating'] = 0.0
+            new_row['review_prod_rating'] = None
             new_row['label'] = meta[4]
             rows.append(new_row)
             count += 1
@@ -134,7 +146,9 @@ def main():
     for idx in features.reviewerID:
         if 'avg' not in reviewer_dict[idx].keys():
             t = features[features['reviewerID'] == idx].length
+            r = features[features['reviewerID'] == idx].rating
             reviewer_dict[idx]['avg'] = sum(t) / len(t)
+            reviewer_dict[idx]['ratings'] = list(r)
             c += 1
             if c % 1000 == 0:
                 logging.info('processed reviewer # {}'.format(c))
@@ -145,8 +159,10 @@ def main():
         features.at[index, 'word_num_avg'] = v
         pr = reviewer_dict[row['reviewerID']]['positive'] / row['total_reviews']
         nr = reviewer_dict[row['reviewerID']]['negative'] / row['total_reviews']
+        rr = reviewer_dict[row['reviewerID']]['genuine'] / row['total_reviews']
         features.at[index, 'positive_ratio'] = pr
         features.at[index, 'negative_ratio'] = nr
+        features.at[index, 'reviewer_rating'] = rr
 
     logging.info('saving features to disk')
     features.to_csv('features.csv')
