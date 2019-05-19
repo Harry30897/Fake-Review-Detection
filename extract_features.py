@@ -80,11 +80,6 @@ def create_reviewer_dict(filename):
     return reviewers
 
 
-def create_product_dict(filename):
-    products = {}
-    return products
-
-
 def main():
     content_file, meta_file = sys.argv[1], sys.argv[2]
 
@@ -115,7 +110,6 @@ def main():
 
     count = 0
     reviewer_dict = create_reviewer_dict(meta_file)
-    product_dict = create_product_dict(meta_file)
 
     with open(content_file, 'r') as reviews, open(meta_file, 'r') as meta_data:
         rows = []
@@ -141,7 +135,7 @@ def main():
             new_row['positive_ratio'] = 0.0
             new_row['negative_ratio'] = 0.0
             new_row['trust_rating'] = 0.0
-            new_row['goodness_rating'] = None
+            new_row['goodness_rating'] = 0.0
             new_row['label'] = meta[4]
             rows.append(new_row)
             count += 1
@@ -163,7 +157,7 @@ def main():
             c += 1
             if c % 1000 == 0:
                 logging.info('processed reviewer # {}'.format(c))
-    logging.info('processing {} reviewrs'.format(c))
+    logging.info('processed {} reviewrs'.format(c))
 
     for index, row in features.iterrows():
         v = reviewer_dict[row['reviewerID']]['avg']
@@ -177,6 +171,25 @@ def main():
         features.at[index, 'trust_rating'] = rr
 
     logging.info('computing product ratings...')
+    products = {}
+    with open(meta_file, 'r') as file:
+        c = 0
+        for line in file:
+            line = line.split(' ')
+            ur = features[features.index == line[1]]['trust_rating']
+            if line[3] not in products.keys():
+                products[line[3]] = {'count': 1}
+                products[line[3]]['sum'] = float(int(line[8]) * ur)
+            else:
+                products[line[3]]['count'] += 1
+                products[line[3]]['sum'] += int(line[8]) * ur
+            products[line[3]]['goodness'] = float(products[line[3]]['sum'] / products[line[3]]['count'])
+            c += 1
+            print('at product # {}'.format(c), end='\r')
+
+    for index, row in features.iterrows():
+        p = row['productID']
+        features.at[index, 'goodness_rating'] = products[p]['goodness']
 
     logging.info('saving features to disk')
     features.to_csv('features.csv')
