@@ -162,7 +162,10 @@ def main():
         rr = reviewer_dict[row['reviewerID']]['genuine'] / tr
         features.at[index, 'positive_ratio'] = pr
         features.at[index, 'negative_ratio'] = nr
-        features.at[index, 'reviewer_rating'] = rr
+        features.at[index, 'trust_rating'] = rr
+
+    logging.info('computing product ratings...')
+
 
     logging.info('saving features to disk')
     features.to_csv('features.csv')
