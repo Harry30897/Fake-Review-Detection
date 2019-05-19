@@ -80,8 +80,14 @@ def create_reviewer_dict(filename):
     return reviewers
 
 
+def create_product_dict(filename):
+    products = {}
+    return products
+
+
 def main():
     content_file, meta_file = sys.argv[1], sys.argv[2]
+
     columns = [
         'reviewID',
         'reviewerID',
@@ -102,14 +108,18 @@ def main():
         'goodness_rating',
         'label'
     ]
+
     features = pd.DataFrame(
         columns=columns
     )
+
     count = 0
     reviewer_dict = create_reviewer_dict(meta_file)
+    product_dict = create_product_dict(meta_file)
+
     with open(content_file, 'r') as reviews, open(meta_file, 'r') as meta_data:
         rows = []
-        logging.info('processing reviews now')
+        logging.info('processing reviews now...')
         for review, meta in zip(reviews, meta_data):
             new_row = {}
             meta = meta.split(' ')
@@ -137,10 +147,12 @@ def main():
             count += 1
             if count % 10000 == 0:
                 logging.info('processed review # {}'.format(count))
+        logging.info('processed {} reviews'.format(count))
+
     features = features.append(rows, ignore_index=True)
     features = features.set_index('reviewID')
 
-    logging.info('processing reviewers now')
+    logging.info('processing reviewers now...')
     c = 0
     for idx in features.reviewerID:
         if 'avg' not in reviewer_dict[idx].keys():
@@ -151,8 +163,8 @@ def main():
             c += 1
             if c % 1000 == 0:
                 logging.info('processed reviewer # {}'.format(c))
+    logging.info('processing {} reviewrs'.format(c))
 
-    logging.info('processing complete')
     for index, row in features.iterrows():
         v = reviewer_dict[row['reviewerID']]['avg']
         features.at[index, 'word_num_avg'] = v
@@ -165,7 +177,6 @@ def main():
         features.at[index, 'trust_rating'] = rr
 
     logging.info('computing product ratings...')
-
 
     logging.info('saving features to disk')
     features.to_csv('features.csv')
