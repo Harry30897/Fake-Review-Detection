@@ -12,11 +12,12 @@ def user_trust_rating():
             if line[2] not in user.keys():
                 user[line[2]] = {'count': 1}
                 if line[4] == 'N':
-                    user[line[2]] = {'tcount': 1}
+                    user[line[2]]['tcount'] = 1
             else:
                 user[line[2]]['count'] += 1
                 if line[4] == 'N':
                     user[line[2]]['tcount'] += 1
+            print(user)        
             user[line[2]]['trust_rating'] = user[line[2]]['tcount'] / user[line[2]]['count']
             print(user[line[2]]['trust_rating'])
             break
@@ -27,8 +28,10 @@ def goodness_of_restaurant():
         for line in mfile:
             line = line.split(" ")
             if line[3] not in product.keys():
-                product[line[3]]['summison'] = line[8] * user[line[2]]['trust_rating']
+                product[line[3]]['summison'] = line[8] * reviewer_dict[row[line[2]]]['genuine'] / row['total_reviews']
             else:
-                product[line[3]]['summison'] += line[8] * user[line[2]]['trust_rating']
+                product[line[3]]['summison'] += line[8] * reviewer_dict[row[line[2]]]['genuine'] / row['total_reviews']
             product[line[3]]['goodness'] = product[line[3]]['summison'] / 100
             break
+
+user_trust_rating()
