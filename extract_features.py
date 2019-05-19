@@ -182,10 +182,13 @@ def main():
                 products[line[3]]['sum'] = float(int(line[8]) * ur)
             else:
                 products[line[3]]['count'] += 1
-                products[line[3]]['sum'] += int(line[8]) * ur
+                products[line[3]]['sum'] += float(int(line[8]) * ur)
             products[line[3]]['goodness'] = float(products[line[3]]['sum'] / products[line[3]]['count'])
             c += 1
             print('at product # {}'.format(c), end='\r')
+    input('print products...')
+    print(products)
+    input('continue...')
 
     for index, row in features.iterrows():
         p = row['productID']
