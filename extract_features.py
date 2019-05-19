@@ -1,5 +1,4 @@
 import sys
-import csv
 import re
 from math import ceil
 import pandas as pd
@@ -95,12 +94,12 @@ def main():
         'rating',
         'word_num_avg',
         'total_reviews',
-        'rating_var',
+        # 'rating_var',
         'max_rating',
         'positive_ratio',
         'negative_ratio',
-        'reviewer_rating',
-        'review_prod_rating',
+        'trust_rating',
+        'goodness_rating',
         'label'
     ]
     features = pd.DataFrame(
@@ -127,12 +126,12 @@ def main():
             new_row['rating'] = int(meta[8])
             new_row['word_num_avg'] = None  # reviewer_dict[meta[2]][0]
             new_row['total_reviews'] = reviewer_dict[meta[2]]['count']
-            new_row['rating_var'] = None  # reviewer_dict[meta[2]][0]
+            # new_row['rating_var'] = None  # reviewer_dict[meta[2]][0]
             new_row['max_rating'] = reviewer_dict[meta[2]][meta[0]]
             new_row['positive_ratio'] = 0.0
             new_row['negative_ratio'] = 0.0
-            new_row['reviewer_rating'] = 0.0
-            new_row['review_prod_rating'] = None
+            new_row['trust_rating'] = 0.0
+            new_row['goodness_rating'] = None
             new_row['label'] = meta[4]
             rows.append(new_row)
             count += 1
@@ -157,9 +156,10 @@ def main():
     for index, row in features.iterrows():
         v = reviewer_dict[row['reviewerID']]['avg']
         features.at[index, 'word_num_avg'] = v
-        pr = reviewer_dict[row['reviewerID']]['positive'] / row['total_reviews']
-        nr = reviewer_dict[row['reviewerID']]['negative'] / row['total_reviews']
-        rr = reviewer_dict[row['reviewerID']]['genuine'] / row['total_reviews']
+        tr = row['total_reviews']
+        pr = reviewer_dict[row['reviewerID']]['positive'] / tr
+        nr = reviewer_dict[row['reviewerID']]['negative'] / tr
+        rr = reviewer_dict[row['reviewerID']]['genuine'] / tr
         features.at[index, 'positive_ratio'] = pr
         features.at[index, 'negative_ratio'] = nr
         features.at[index, 'reviewer_rating'] = rr
